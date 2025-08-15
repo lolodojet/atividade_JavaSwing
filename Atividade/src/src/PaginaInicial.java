@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -13,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.ButtonGroup;
@@ -31,6 +33,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import java.awt.event.ActionListener;
+import java.util.Iterator;
 import java.awt.event.ActionEvent;
 
 public class PaginaInicial {
@@ -73,21 +76,6 @@ public class PaginaInicial {
 		Principal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Principal.getContentPane().setLayout(null);
 		
-		JCheckBox ckMensagem = new JCheckBox("Abrir Mensagem             Ctrl+M ");
-		buttonGroup_1.add(ckMensagem);
-		ckMensagem.setBounds(12, 5, 208, 23);
-		Principal.getContentPane().add(ckMensagem);
-		
-		JCheckBox ckCartao = new JCheckBox("Abrir Cartão de Visita     Ctrl+C");
-		buttonGroup_1.add(ckCartao);
-		ckCartao.setBounds(12, 26, 199, 23);
-		Principal.getContentPane().add(ckCartao);
-		
-		JPanel panel = new JPanel();
-		panel.setBorder(new LineBorder(new Color(0, 0, 0)));
-		panel.setBounds(3, 3, 220, 50);
-		Principal.getContentPane().add(panel);
-		
 		JLabel lblDigiteMensagem = new JLabel("Digite uma Mensagem: ");
 		lblDigiteMensagem.setBounds(15, 82, 157, 14);
 		Principal.getContentPane().add(lblDigiteMensagem);
@@ -100,7 +88,12 @@ public class PaginaInicial {
 		JButton btnMostraMensagem = new JButton("Mostra Mensagem");
 		btnMostraMensagem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, txtMensagem.getText(),"Mensagem", 1);
+				String mensagem = txtMensagem.getText().trim();
+					if (mensagem.isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Por favor, digite algo!", "AVISO", 2);
+					} else {
+						JOptionPane.showMessageDialog(null, txtMensagem.getText(), "Mensagem", 1);
+					}
 			}
 		});
 		btnMostraMensagem.setBounds(12, 137, 149, 23);
@@ -181,13 +174,28 @@ public class PaginaInicial {
 		JButton btnItens = new JButton("Itens Selecionados");
 		btnItens.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				String selecionados = "";
+				
 				if(ckJornal.isSelected()) {
-					JOptionPane.showMessageDialog(null, ckJornal.getText(),"Itens Selecionados", 1);
+					selecionados += ckJornal.getText()+" | ";
 				}
+				if(ckRevista.isSelected()) {
+					selecionados += ckRevista.getText()+" | ";
+				}
+				if(ckCD.isSelected()) {
+					selecionados += ckCD.getText()+ " ";
+				}
+				
+				JOptionPane.showMessageDialog(null, selecionados, "Itens Selecionados", 1);
 			}
 		});
 		btnItens.setBounds(110, 216, 149, 23);
 		Principal.getContentPane().add(btnItens);
+		
+		JTextArea textArea = new JTextArea();
+		textArea.setBounds(110, 320, 193, 85);
+		Principal.getContentPane().add(textArea);
 		
 		JRadioButton rdMasculino = new JRadioButton("Masculino");
 		buttonGroup.add(rdMasculino);
@@ -200,6 +208,18 @@ public class PaginaInicial {
 		Principal.getContentPane().add(rdFeminino);
 		
 		JButton btnInserir = new JButton("Inserir");
+		btnInserir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (rdMasculino.isSelected() == true) {
+					textArea.setText(rdMasculino.getText());
+				}
+				
+				if (rdFeminino.isSelected() == true) {
+					textArea.setText(rdFeminino.getText());
+				}
+			}
+		});
+		
 		btnInserir.setBounds(12, 382, 77, 23);
 		Principal.getContentPane().add(btnInserir);
 		
@@ -216,19 +236,34 @@ public class PaginaInicial {
 		list.setBounds(324, 193, 149, 162);
 		Principal.getContentPane().add(list);
 		
-		JList list_1 = new JList();
-		list_1.setBounds(483, 193, 146, 162);
-		Principal.getContentPane().add(list_1);
+		JList list2 = new JList();
+		list2.setBounds(483, 193, 146, 162);
+		Principal.getContentPane().add(list2);
 		
 		JButton btnConfirma = new JButton("Confirma");
+		btnConfirma.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DefaultListModel dlm = new DefaultListModel();
+				list2.setModel(dlm);			
+				list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+				
+				for (Iterator it = list.getSelectedValuesList().iterator(); it.hasNext();) {
+				String itemSelecionado = (String) it.next();
+				if (!dlm.contains(itemSelecionado)) {
+					dlm.addElement(itemSelecionado);
+				}
+				}
+			}
+		});
 		btnConfirma.setBounds(444, 364, 77, 23);
 		Principal.getContentPane().add(btnConfirma);
 		
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(110, 320, 193, 85);
-		Principal.getContentPane().add(textArea);
-		
 		JButton btnSair = new JButton("Sair");
+		btnSair.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
 		btnSair.setBounds(552, 445, 77, 23);
 		Principal.getContentPane().add(btnSair);
 		
@@ -243,13 +278,21 @@ public class PaginaInicial {
 		JMenu mnArquivo = new JMenu("Arquivo");
 		menuBar.add(mnArquivo);
 		
-		JMenuItem MenuItem = new JMenuItem("Item 1");
-		mnArquivo.add(MenuItem);
+		JMenuItem mntmAbrirMensagem = new JMenuItem("Abrir mensagem");
+		mntmAbrirMensagem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(null, "Página bem labubonica com morangos do amor, bobbie goods e chocolates com pistache!  #-#");
+			}
+		});
+		mnArquivo.add(mntmAbrirMensagem);
 		
-		JMenu mnAjuda = new JMenu("Ajuda");
-		menuBar.add(mnAjuda);
-		
-		JMenuItem Ajuda = new JMenuItem("Suporte");
-		mnAjuda.add(Ajuda);
+		JMenuItem mntmcard = new JMenuItem("Abrir cartão de visitas");
+		mntmcard.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cartaoDeVisitas cartao = new cartaoDeVisitas();
+				cartao.setVisible(true);
+			}
+		});
+		mnArquivo.add(mntmcard);
 	}
 }
